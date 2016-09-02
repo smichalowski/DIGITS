@@ -255,7 +255,10 @@ def create(extension_id=None):
                         network = network,
                         random_seed = form.random_seed.data,
                         solver_type = form.solver_type.data,
-                        rms_decay=form.rms_decay.data,
+                        rms_decay = form.rms_decay.data,
+                        clip_gradients = forms.clip_gradients.data,
+                        regularization_type = forms.regularization_type.data,
+                        weight_decay = forms.weight_decay.data,
                         shuffle = form.shuffle.data,
                         data_aug = data_aug,
                         )

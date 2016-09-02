@@ -382,7 +382,7 @@ showHideSolverSpecificOptions();
                     <div class="form-group{{mark_errors([form.clip_gradients])}}">
                         {{form.clip_gradients.label}}
                         {{form.clip_gradients.tooltip}}
-                        {{form.clip_gradients(class='form-control')}}
+                        {{form.clip_gradients(class='form-control', placeholder='-1')}}
                     </div>
 
                     <div class="form-group{{mark_errors([form.regularization_type])}}">
@@ -420,8 +420,11 @@ function overrideComputedWeightDecay() {
     } else
         $("#weight_decay").attr("disabled", "disabled");
 }
+if (!$("#weight_decay").val()){
+    alert("puste");
+}
 $("#weight_decay").attr("disabled", "disabled");
-$("#weight_decay").val($("#learning_rate").val() / 100);
+//$("#weight_decay").val($("#learning_rate").val() / 100);
 $("#show-additional-solver-options").click(showAdditionalSolverOptions);
 $("#override-computed-weight-decay").click(overrideComputedWeightDecay);
 

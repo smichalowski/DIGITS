@@ -242,7 +242,8 @@ class ModelForm(Form):
     clip_gradients = utils.forms.FloatField('Clip gradients',
             default = -1,
             validators = [
-                validators.NumberRange(min=0),
+                validators.NumberRange(min=-1),
+                validators.Optional(),
             ],
             tooltip = "Set clip_gradients to >= 0 to clip parameter gradients to that L2 norm, whenever their actual L2 norm is larger."
             )
@@ -257,7 +258,7 @@ class ModelForm(Form):
             )
 
     weight_decay = utils.forms.FloatField('Weight Decay',
-            default = -1,
+            default = 0.00001,
             validators = [
                 validators.NumberRange(min=0),
             ],

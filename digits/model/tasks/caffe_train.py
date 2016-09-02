@@ -587,12 +587,14 @@ class CaffeTrainTask(TrainTask):
 
         # additional solver settings
         if self.regularization_type == 'L1':
-            solver.regularization_type == self.regularization_type
+            solver.regularization_type = self.regularization_type
 
-        if self.clip_gradients != -1:
+        if self.clip_gradients is not None:
             solver.clip_gradients = self.clip_gradients
 
-        if self.weight_decay != solver.weight_decay:
+        if self.weight_decay is None:
+            solver.weight_decay = solver.base_lr / 100.0
+        else:
             solver.weight_decay = self.weight_decay
 
         # Display 8x per epoch, or once per 5000 images, whichever is more frequent
