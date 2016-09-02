@@ -168,6 +168,13 @@ class ModelForm(Form):
                 ],
             tooltip = "If the gradient updates results in oscillations the gradient is reduced by times 1-rms_decay. Otherwise it will be increased by rms_decay."
             )
+    delta = utils.forms.FloatField('Delta',
+                                       default=0.00000001,
+                                       validators=[
+                                           validators.NumberRange(min=0),
+                                       ],
+                                       tooltip="Numerical stability for RMSProp, AdaGrad, AdaDelta and ADAM solvers."
+                                       )
 
     ### Learning rate
 
@@ -228,6 +235,33 @@ class ModelForm(Form):
             )
     lr_sigmoid_gamma = wtforms.FloatField('Gamma',
             default = 0.1
+            )
+
+    ### Additional solver options
+
+    clip_gradients = utils.forms.FloatField('Clip gradients',
+            default = -1,
+            validators = [
+                validators.NumberRange(min=0),
+            ],
+            tooltip = "Set clip_gradients to >= 0 to clip parameter gradients to that L2 norm, whenever their actual L2 norm is larger."
+            )
+
+    regularization_type = utils.forms.SelectField('Regularization Type',
+            choices = [
+                ('L1', 'L1 Regularization'),
+                ('L2', 'L2 Regularization'),
+            ],
+            default = 'L2',
+            tooltip = "The regularization type is a parameter used for updating weights across all layers."
+            )
+
+    weight_decay = utils.forms.FloatField('Weight Decay',
+            default = -1,
+            validators = [
+                validators.NumberRange(min=0),
+            ],
+            tooltip = "During training a regularization term is added to the network's loss to compute the backprop gradient. The weight_decay value determines how dominant this regularization term will be in the gradient computation."
             )
 
     ### Network
