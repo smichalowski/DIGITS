@@ -161,6 +161,11 @@ $("#dataset").change();
                     {{form.rms_decay.tooltip}}
                     {{form.rms_decay(class='form-control')}}
                 </div>
+                <div class="solver-specific-RMSPROP solver-specific-ADAGRAD solver-specific-ADADELTA solver-specific-ADAM form-group{{mark_errors([form.delta])}}">
+                    {{form.delta.label}}
+                    {{form.delta.tooltip}}
+                    {{form.delta(class='form-control')}}
+                </div>
                 <div class="form-group{{mark_errors([form.learning_rate])}}">
                     {{form.learning_rate.label}}
                     {{form.learning_rate.tooltip}}
@@ -176,6 +181,7 @@ $("#dataset").change();
                     Show advanced learning rate options
                 </label>
                 </p>
+
                 <script>
 {% for choice in form.solver_type.choices %}
 {% for fw in frameworks %}
@@ -197,9 +203,7 @@ function showHideAdvancedLROptions() {
 function showHideSolverSpecificOptions() {
     $('[class^="solver-specific-"]').hide();
     var solver_type = $("#solver_type").val();
-    if (solver_type == 'RMSPROP') {
-        $(".solver-specific-" + solver_type).show();
-    }
+    $(".solver-specific-" + solver_type).show();
 }
 
 $("#solver_type").change(showHideSolverSpecificOptions);
@@ -365,6 +369,156 @@ showHideSolverSpecificOptions();
                         showSelectedAdvancedLROptions();
                     </script>
                 </div>
+
+                <p>
+                <label class="checkbox-inline">
+                    <input id="show-additional-solver-options" type="checkbox" />
+                    Show additional solver options
+                </label>
+                </p>
+
+                <div id="additional-solver-options" style="display:none;">
+
+                    <div class="form-group{{mark_errors([form.clip_gradients])}}">
+                        {{form.clip_gradients.label}}
+                        {{form.clip_gradients.tooltip}}
+                        {{form.clip_gradients(class='form-control')}}
+                    </div>
+
+                    <div class="form-group{{mark_errors([form.regularization_type])}}">
+                        {{form.regularization_type.label}}
+                        {{form.regularization_type.tooltip}}
+                        {{form.regularization_type(class='form-control')}}
+                    </div>
+
+                    <p>
+                    <label class="checkbox-inline">
+                        <input id="override-computed-weight-decay" type="checkbox" />
+                        Override computed weight decay
+                    </label>
+                    </p>
+
+                    <div class="form-group{{mark_errors([form.weight_decay])}}">
+                        {{form.weight_decay.label}}
+                        {{form.weight_decay.tooltip}}
+                        {{form.weight_decay(class='form-control')}}
+                    </div>
+
+
+                    <script>
+
+function showAdditionalSolverOptions() {
+    if ($("#show-additional-solver-options").prop("checked")) {
+        $("#additional-solver-options").show();
+    } else
+        $("#additional-solver-options").hide();
+}
+
+function overrideComputedWeightDecay() {
+    if ($("#override-computed-weight-decay").prop("checked")) {
+        $("#weight_decay").removeAttr("disabled");
+    } else
+        $("#weight_decay").attr("disabled", "disabled");
+}
+$("#weight_decay").attr("disabled", "disabled");
+$("#weight_decay").val($("#learning_rate").val() / 100);
+$("#show-additional-solver-options").click(showAdditionalSolverOptions);
+$("#override-computed-weight-decay").click(overrideComputedWeightDecay);
+
+                        function showHideAdvancedLROption(selector, show) {
+                            show = show || true;
+                            var element = $(selector);
+                            while (!element.hasClass('form-group')) {
+                                element = element.parent();
+                                if (element.attr('id') == 'advanced_lr_options')
+                                    // We've gone too far
+                                    return;
+                            }
+                            if (show)
+                                element.show();
+                            else
+                                element.hide();
+                        }
+                        function showSelectedAdvancedLROptions() {
+                            $("#advanced-lr-options div.form-group").hide();
+                            showHideAdvancedLROption('#lr_policy');
+
+                            // Turn some back on
+                            switch($("#lr_policy").val()) {
+                                case 'step':
+                                showHideAdvancedLROption('#lr_step_size');
+                                showHideAdvancedLROption('#lr_step_gamma');
+                                break;
+                                case 'multistep':
+                                showHideAdvancedLROption('#lr_multistep_values');
+                                showHideAdvancedLROption('#lr_multistep_gamma');
+                                break;
+                                case 'exp':
+                                showHideAdvancedLROption('#lr_exp_gamma');
+                                break;
+                                case 'inv':
+                                showHideAdvancedLROption('#lr_inv_gamma');
+                                showHideAdvancedLROption('#lr_inv_power');
+                                break;
+                                case 'poly':
+                                showHideAdvancedLROption('#lr_poly_power');
+                                break;
+                                case 'sigmoid':
+                                showHideAdvancedLROption('#lr_sigmoid_step');
+                                showHideAdvancedLROption('#lr_sigmoid_gamma');
+                                break;
+                                default:
+                                break;
+                            }
+                        }
+                        function drawLRGraph(data) {
+                            $("#visualize-lr").show();
+                            c3.generate($.extend(true, data, {
+                                bindto: '#visualize-lr-graph',
+                                size: {height: 200},
+                                axis: {
+                                    x: {
+                                        label: {
+                                            text: 'Training (%)',
+                                            position: 'outer-center',
+                                        },
+                                    },
+                                    y: {
+                                        min: 0,
+                                        padding: {bottom: 0},
+                                    }
+                                },
+                                legend: {show: false},
+                            }));
+                        }
+                        function getLRGraph() {
+                            $.ajax("{{url_for('digits.model.views.visualize_lr')}}",
+                            {
+                                type: "POST",
+                                data: $(".learning-rate-option").serialize()
+                            }
+                            )
+                            .done(function(data) {
+                                drawLRGraph($.parseJSON(data));
+                            })
+                            .fail(function(data) {
+                                $("#visualize-lr-graph").html("");
+                                errorAlert(data);
+                            });
+                            return false;
+                        }
+
+                        $("input.learning-rate-option").change(function() {
+                            getLRGraph();
+                        });
+                        $("select.learning-rate-option").change(function() {
+                            showSelectedAdvancedLROptions();
+                            getLRGraph();
+                        });
+                        showSelectedAdvancedLROptions();
+                    </script>
+                </div>
+
             </div>
         </div>
 

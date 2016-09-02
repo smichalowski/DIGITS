@@ -582,6 +582,18 @@ class CaffeTrainTask(TrainTask):
         # solver specific values
         if solver.solver_type == solver.RMSPROP:
             solver.rms_decay = self.rms_decay
+        if solver.solver_type in (solver.ADAGRAD, solver.RMSPROP, solver.ADADELTA, solver.ADAM):
+            solver.delta = self.delta
+
+        # additional solver settings
+        if self.regularization_type == 'L1':
+            solver.regularization_type == self.regularization_type
+
+        if self.clip_gradients != -1:
+            solver.clip_gradients = self.clip_gradients
+
+        if self.weight_decay != solver.weight_decay:
+            solver.weight_decay = self.weight_decay
 
         # Display 8x per epoch, or once per 5000 images, whichever is more frequent
         solver.display = max(1, min(
