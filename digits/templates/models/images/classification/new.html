@@ -62,6 +62,17 @@ function syncAceEditor(){
                         {{form.python_layer_from_client.label}}
                     </label>
                 </div>
+                zzzz: {{ multiple_caffe }} {{ multi_gpu }}
+                <div class="well">
+                    <h4 style="display:inline-block;">Caffe version</h4>
+                    <div class="form-group{{mark_errors([form.caffe_version])}}">
+                        {{form.caffe_version.label}}
+                        {{form.caffe_version.tooltip}}
+                        {{form.caffe_version(class='form-control', size=5)}}
+                        <div id="caffe-summary"></div>
+                    </div>
+                </div>
+
             </div>
         </div>
         <script>
@@ -101,6 +112,24 @@ $("#dataset").change(function() {
         }
     });
 $("#dataset").change();
+
+$("#caffe_version").change(function() {
+    if ($(this).val()) {
+        $.ajax("/datasets/summary?job_id=" + $(this).val(),
+            {
+                type: "GET",
+                }
+            )
+        .done(function(data) {
+            $("#caffe_version-summary").html(data);
+            })
+        .fail(function(data) {
+            $("#caffe_version-summary").html("");
+            errorAlert(data);
+            });
+        }
+    });
+$("#caffe_version").change();
         </script>
 
         <div class="col-sm-4">

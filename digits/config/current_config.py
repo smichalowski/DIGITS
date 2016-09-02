@@ -10,6 +10,7 @@ from .log_level import LogLevelOption
 from .torch_option import TorchOption
 from .server_name import ServerNameOption
 from .secret_key import SecretKeyOption
+from .multiple_caffe import MultipleCaffeOption
 
 option_list = None
 
@@ -27,6 +28,7 @@ def reset():
             ServerNameOption(),
             SecretKeyOption(),
             CaffeOption(),
+            MultipleCaffeOption(),
             TorchOption(),
             DataExtensionListOption(),
             ViewExtensionListOption(),

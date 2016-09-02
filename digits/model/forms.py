@@ -88,6 +88,9 @@ class ModelForm(Form):
         tooltip = "Choose a Python file on the server containing layer definitions."
     )
 
+    caffe_version = utils.forms.SelectField('Select Caffe Version', choices=[],
+                    tooltip = "Choose the Caffe version to use for this model.")
+
     train_epochs = utils.forms.IntegerField('Training epochs',
             validators = [
                 validators.NumberRange(min=1)
