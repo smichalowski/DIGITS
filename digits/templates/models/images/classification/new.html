@@ -371,10 +371,11 @@ showHideSolverSpecificOptions();
                 </div>
 
                 <p>
-                <label class="checkbox-inline">
-                    <input id="show-additional-solver-options" type="checkbox" />
-                    Show additional solver options
-                </label>
+                    <label class="checkbox-inline" for="{{form.show_additional_solver_options.name}}">
+                        {{form.show_additional_solver_options}}
+                        {{form.show_additional_solver_options.label(style='font-weight: normal;')}}
+                    </label>
+                    </p>
                 </p>
 
                 <div id="additional-solver-options" style="display:none;">
@@ -392,9 +393,13 @@ showHideSolverSpecificOptions();
                     </div>
 
                     <p>
-                    <label class="checkbox-inline">
-                        <input id="override-computed-weight-decay" type="checkbox" />
-                        Override computed weight decay
+                    <!--<label class="checkbox-inline">-->
+                        <!--<input id="override-computed-weight-decay" type="checkbox" />-->
+                        <!--Override computed weight decay-->
+                    <!--</label>-->
+                    <label class="checkbox-inline" for="{{form.override_computed_wd.name}}">
+                        {{form.override_computed_wd}}
+                        {{form.override_computed_wd.label}}
                     </label>
                     </p>
 
@@ -406,27 +411,39 @@ showHideSolverSpecificOptions();
 
 
                     <script>
-
+var tempWeightDecay = {{form.weight_decay.data}};
 function showAdditionalSolverOptions() {
-    if ($("#show-additional-solver-options").prop("checked")) {
+    if ($("#show_additional_solver_options").prop("checked")) {
         $("#additional-solver-options").show();
     } else
         $("#additional-solver-options").hide();
 }
 
 function overrideComputedWeightDecay() {
-    if ($("#override-computed-weight-decay").prop("checked")) {
+    console.log("clicked");
+    if ($("#override_computed_wd").prop("checked")) {
         $("#weight_decay").removeAttr("disabled");
-    } else
+        $("#weight_decay").val(tempWeightDecay);
+    } else {
         $("#weight_decay").attr("disabled", "disabled");
+        tempWeightDecay = $("#weight_decay").val();
+        computeWeightDecay();
+    }
 }
-if (!$("#weight_decay").val()){
-    alert("puste");
+
+function computeWeightDecay() {
+    var lr = $("#learning_rate").val().split(",")[0];
+    $("#weight_decay").val(lr / 100);
 }
-$("#weight_decay").attr("disabled", "disabled");
-//$("#weight_decay").val($("#learning_rate").val() / 100);
-$("#show-additional-solver-options").click(showAdditionalSolverOptions);
-$("#override-computed-weight-decay").click(overrideComputedWeightDecay);
+$("#learning_rate").change(function() {
+    if (!$("#override_computed_wd").prop("checked")) {
+        computeWeightDecay();
+    }
+});
+$("#show_additional_solver_options").click(showAdditionalSolverOptions);
+$("#override_computed_wd").click(overrideComputedWeightDecay);
+showAdditionalSolverOptions();
+overrideComputedWeightDecay();
 
                         function showHideAdvancedLROption(selector, show) {
                             show = show || true;

@@ -239,6 +239,9 @@ class ModelForm(Form):
 
     ### Additional solver options
 
+    show_additional_solver_options = utils.forms.BooleanField(u'Show additional solver options',
+                                                default=False)
+
     clip_gradients = utils.forms.FloatField('Clip gradients',
             default = -1,
             validators = [
@@ -256,6 +259,9 @@ class ModelForm(Form):
             default = 'L2',
             tooltip = "The regularization type is a parameter used for updating weights across all layers."
             )
+
+    override_computed_wd = utils.forms.BooleanField(u'Override computed weight decay',
+                                                default=False)
 
     weight_decay = utils.forms.FloatField('Weight Decay',
             default = 0.00001,

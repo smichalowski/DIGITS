@@ -278,6 +278,10 @@ def create():
                  if form.python_layer_client_file.name in flask.request.files
                  else ''), form.python_layer_server_file.data)
 
+            print 'fw create task'
+            print 'wd data: ', form.weight_decay.data
+            print 'override computed ', form.override_computed_wd.data
+
             job.tasks.append(fw.create_train_task(
                         job = job,
                         dataset = datasetJob,

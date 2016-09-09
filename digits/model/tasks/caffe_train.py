@@ -577,7 +577,6 @@ class CaffeTrainTask(TrainTask):
 
         if solver.solver_type not in unsupported:
             solver.momentum = 0.9
-        solver.weight_decay = solver.base_lr / 100.0
 
         # solver specific values
         if solver.solver_type == solver.RMSPROP:
@@ -592,8 +591,14 @@ class CaffeTrainTask(TrainTask):
         if self.clip_gradients is not None:
             solver.clip_gradients = self.clip_gradients
 
+        print 'zzzzz ', self.weight_decay
+
         if self.weight_decay is None:
-            solver.weight_decay = solver.base_lr / 100.0
+            print 'weight decay'
+            print solver.weight_decay
+            print solver.base_lr
+            solver.weight_decay = float(solver.base_lr) / 100.0
+            print solver.weight_decay
         else:
             solver.weight_decay = self.weight_decay
 
